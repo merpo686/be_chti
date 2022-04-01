@@ -1,11 +1,9 @@
 
 
 #include "DriverJeuLaser.h"
-extern void CallbackSon(void);
+#include "GestionSon.h"
 extern int PeriodeSonMicroSec;
-extern short SortieSon;
 extern int i;
-
 int main(void)
 {
 
@@ -18,6 +16,7 @@ CLOCK_Configure();
 
 Timer_1234_Init_ff(TIM4,PeriodeSonMicroSec*72);
 Active_IT_Debordement_Timer(TIM4,2,CallbackSon);
+	
 
 PWM_Init_ff(TIM3,3, 720);
 GPIO_Configure(GPIOB, 0, OUTPUT, ALT_PPULL);
@@ -26,7 +25,11 @@ GPIO_Configure(GPIOB, 0, OUTPUT, ALT_PPULL);
 	
 	
 while	(1)
-	{
-	}
+{
+		if (i>=5512)
+			{
+				StartSon();
+		  }
 }
 
+}

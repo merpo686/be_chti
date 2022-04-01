@@ -30,11 +30,11 @@ ARM Macro Assembler    Page 1
    20 00000008         
    21 00000008         ;Section ROM code (read only) :  
    22 00000008                 area             moncode,code,readonly
-   23 00000000                 export           i
-   24 00000000                 EXPORT           CallbackSon
-   25 00000000                 EXPORT           SortieSon
-   26 00000000                 import           Son
-   27 00000000                 import           LongueurSon
+   23 00000000                 import           Son
+   24 00000000                 import           LongueurSon
+   25 00000000                 export           CallbackSon
+   26 00000000                 export           i
+   27 00000000                 export           StartSon
    28 00000000                 include          Driver/DriverJeuLaser.inc
     1 00000000         
     2 00000000         ; Bibliotheque DriverJeuLaser (ancienne gassp72 adaptée 
@@ -106,68 +106,78 @@ ARM Macro Assembler    Page 2
    55 00000000         
    56 00000000                 end
    29 00000000         
-   30 00000000         
-   31 00000000         ; écrire le code ici  
-   32 00000000         CallbackSon
+   30 00000000         StartSon
                                proc
-   33 00000000 4B0E            ldr              r3,=i
-   34 00000002 6818            ldr              R0,[r3]
-   35 00000004         ;r0= i
-   36 00000004 4B0E            ldr              r3, =LongueurSon
-   37 00000006 6819            ldr              r1, [r3]
-   38 00000008         
-   39 00000008         ;r1=5512
-   40 00000008 4288            cmp              r0,r1
-   41 0000000A         ;comparer i et 5512
-   42 0000000A D100            bne              danslaboucle
-   43 0000000C         ;si pas égal on va dans la boucle
-   44 0000000C 4770            bx               lr
-   45 0000000E         ;retour main sinon
-   46 0000000E         danslaboucle
-   47 0000000E 4A0D            ldr              r2,=Son
-   48 00000010         ;r2=addresse tableau Son
-   49 00000010 5E13            ldrsh            r3,[r2,r0]
-   50 00000012         ;r3= son qui nous interesse
+   31 00000000 4B11            ldr              r3,=i
+   32 00000002         ;r3= i
+   33 00000002         
+   34 00000002 F04F 0100       mov              r1,#0
+   35 00000006 6019            str              r1, [r3]
+   36 00000008 4770            bx               lr
+   37 0000000A                 endp
+   38 0000000A         
+   39 0000000A         
+   40 0000000A         ; écrire le code ici  
+   41 0000000A         CallbackSon
+                               proc
+   42 0000000A 4B0F            ldr              r3,=i
+   43 0000000C 6818            ldr              R0,[r3]
+   44 0000000E         ;r0= i
+   45 0000000E 4B0F            ldr              r3, =LongueurSon
+   46 00000010 6819            ldr              r1, [r3]
+   47 00000012         
+   48 00000012         ;r1=5512
+   49 00000012 4288            cmp              r0,r1
 
 
 
 ARM Macro Assembler    Page 3 
 
 
-   51 00000012 F44F 4100       mov              r1,#32768
-   52 00000016         ;r1=32768
-   53 00000016         ;mul r3,#720;asr r3,#16
-   54 00000016 440B            add              r3,r1
-   55 00000018         ;r3=r3+r1
-   56 00000018 F04F 015C       mov              r1,#92
-   57 0000001C         ;r1=92
-   58 0000001C FB93 F3F1       sdiv             r3,r1
-   59 00000020         ;r3=r3/r1
-   60 00000020 4A09            ldr              r2,=SortieSon
-   61 00000022         
-   62 00000022         ;r2=addresse Sortie son
-   63 00000022 8013            strh             r3,[r2]
-   64 00000024         ;Sortie_SOn[i]=r3
-   65 00000024 F04F 0102       mov              r1,#2
-   66 00000028         ;r1=1
-   67 00000028 4408            add              r0,r1
-   68 0000002A         ;r0=r1+r0
-   69 0000002A 4904            ldr              r1,=i
-   70 0000002C         ;r1=addresse i
-   71 0000002C 6008            str              r0,[r1]
-   72 0000002E         ;r0=valeur de i
-   73 0000002E 4618            mov              r0,r3
-   74 00000030 B500            push             {lr}
-   75 00000032 F7FF FFFE       bl               PWM_Set_Value_TIM3_Ch3
-   76 00000036 F85D EB04       pop              {lr}
-   77 0000003A 4770            bx               lr
-   78 0000003C         ;retour main
-   79 0000003C         
-   80 0000003C                 endp
-   81 0000003C         
-   82 0000003C         
-   83 0000003C                 END
-              00000000 
+   50 00000014         ;comparer i et 5512
+   51 00000014 D100            bne              danslaboucle
+   52 00000016         ;si pas égal on va dans la boucle
+   53 00000016 4770            bx               lr
+   54 00000018         ;retour main sinon
+   55 00000018         danslaboucle
+   56 00000018 4A0D            ldr              r2,=Son
+   57 0000001A         ;r2=addresse tableau Son
+   58 0000001A 5E13            ldrsh            r3,[r2,r0]
+   59 0000001C         ;r3= son qui nous interesse
+   60 0000001C F44F 4100       mov              r1,#32768
+   61 00000020         ;r1=32768
+   62 00000020         ;mul r3,#720;asr r3,#16
+   63 00000020 440B            add              r3,r1
+   64 00000022         ;r3=r3+r1
+   65 00000022 F04F 015C       mov              r1,#92
+   66 00000026         ;r1=92
+   67 00000026 FB93 F3F1       sdiv             r3,r1
+   68 0000002A         ;r3=r3/r1
+   69 0000002A 4A0A            ldr              r2,=SortieSon
+   70 0000002C         
+   71 0000002C         ;r2=addresse Sortie son
+   72 0000002C 8013            strh             r3,[r2]
+   73 0000002E         ;Sortie_SOn[i]=r3
+   74 0000002E F04F 0102       mov              r1,#2
+   75 00000032         ;r1=1
+   76 00000032 4408            add              r0,r1
+   77 00000034         ;r0=r1+r0
+   78 00000034 4904            ldr              r1,=i
+   79 00000036         ;r1=addresse i
+   80 00000036 6008            str              r0,[r1]
+   81 00000038         ;r0=valeur de i
+   82 00000038 4618            mov              r0,r3
+   83 0000003A B500            push             {lr}
+   84 0000003C F7FF FFFE       bl               PWM_Set_Value_TIM3_Ch3
+   85 00000040 F85D EB04       pop              {lr}
+   86 00000044 4770            bx               lr
+   87 00000046         ;retour main
+   88 00000046         
+   89 00000046                 endp
+   90 00000046         
+   91 00000046         
+   92 00000046                 END
+              00 00 00000000 
               00000000 
               00000000 
               00000000 
@@ -205,18 +215,18 @@ Symbol: SortieSon
    Definitions
       At line 12 in file Src\GestionSon.s
    Uses
-      At line 25 in file Src\GestionSon.s
-      At line 60 in file Src\GestionSon.s
-
+      At line 69 in file Src\GestionSon.s
+Comment: SortieSon used once
 i 00000004
 
 Symbol: i
    Definitions
       At line 13 in file Src\GestionSon.s
    Uses
-      At line 23 in file Src\GestionSon.s
-      At line 33 in file Src\GestionSon.s
-      At line 69 in file Src\GestionSon.s
+      At line 26 in file Src\GestionSon.s
+      At line 31 in file Src\GestionSon.s
+      At line 42 in file Src\GestionSon.s
+      At line 78 in file Src\GestionSon.s
 
 maram 00000000
 
@@ -233,21 +243,29 @@ Comment: maram unused
 ARM Macro Assembler    Page 1 Alphabetic symbol ordering
 Relocatable symbols
 
-CallbackSon 00000000
+CallbackSon 0000000A
 
 Symbol: CallbackSon
    Definitions
-      At line 32 in file Src\GestionSon.s
+      At line 41 in file Src\GestionSon.s
    Uses
-      At line 24 in file Src\GestionSon.s
+      At line 25 in file Src\GestionSon.s
 Comment: CallbackSon used once
-danslaboucle 0000000E
+StartSon 00000000
+
+Symbol: StartSon
+   Definitions
+      At line 30 in file Src\GestionSon.s
+   Uses
+      At line 27 in file Src\GestionSon.s
+Comment: StartSon used once
+danslaboucle 00000018
 
 Symbol: danslaboucle
    Definitions
-      At line 46 in file Src\GestionSon.s
+      At line 55 in file Src\GestionSon.s
    Uses
-      At line 42 in file Src\GestionSon.s
+      At line 51 in file Src\GestionSon.s
 Comment: danslaboucle used once
 moncode 00000000
 
@@ -257,7 +275,7 @@ Symbol: moncode
    Uses
       None
 Comment: moncode unused
-3 symbols
+4 symbols
 
 
 
@@ -316,9 +334,9 @@ LongueurSon 00000000
 
 Symbol: LongueurSon
    Definitions
-      At line 27 in file Src\GestionSon.s
+      At line 24 in file Src\GestionSon.s
    Uses
-      At line 36 in file Src\GestionSon.s
+      At line 45 in file Src\GestionSon.s
 Comment: LongueurSon used once
 PWM_Set_Value_TIM3_Ch3 00000000
 
@@ -332,15 +350,15 @@ External symbols
    Definitions
       At line 18 in file Driver\DriverJeuLaser.inc
    Uses
-      At line 75 in file Src\GestionSon.s
+      At line 84 in file Src\GestionSon.s
 Comment: PWM_Set_Value_TIM3_Ch3 used once
 Son 00000000
 
 Symbol: Son
    Definitions
-      At line 26 in file Src\GestionSon.s
+      At line 23 in file Src\GestionSon.s
    Uses
-      At line 47 in file Src\GestionSon.s
+      At line 56 in file Src\GestionSon.s
 Comment: Son used once
 9 symbols
-353 symbols in table
+354 symbols in table

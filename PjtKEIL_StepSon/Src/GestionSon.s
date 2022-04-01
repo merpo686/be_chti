@@ -20,14 +20,23 @@ i dcd 0
 		
 ;Section ROM code (read only) :		
 	area    moncode,code,readonly
-	export i	
-	EXPORT CallbackSon
-	EXPORT SortieSon
 	import Son
 	import LongueurSon
+	export CallbackSon
+	export i
+	export StartSon
 	include Driver/DriverJeuLaser.inc
 		
+StartSon proc
+	ldr r3,=i
+	;r3= i
+
+	mov r1,#0
+	str r1, [r3]
+	bx lr
+	endp
 	
+
 ; écrire le code ici		
 CallbackSon proc
 	ldr r3,=i
