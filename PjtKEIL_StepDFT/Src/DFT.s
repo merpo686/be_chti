@@ -12,7 +12,6 @@
 		
 sum_cos dcd 0 ;32bits
 sum_sin dcd 0 ; 32 bits
-sum_tot dcd 0 ;32 bits
 retour dcd 0 ; 32 bits
 n dcw 0 ;inbdice temporel
 	
@@ -34,6 +33,10 @@ DFT_ModuleAuCarre proc
 	;r1=k
 	push{r4,r5,r6,r7}
 	mov r3,#0
+	ldr r4,=sum_cos
+	ldr r5,=sum_sin
+	str r3,[r4]
+	str r3,[r5]
 	ldr r2,=n
 	str r3,[r2] ;initialise n à 0
 loop
@@ -72,9 +75,7 @@ loop
 	mov r4,#0
 	smlal r4,r0,r1,r1
 	smlal r4,r0,r3,r3
-	ldr r1,=sum_tot
-	str r0,[r1] ; r0=somme des modules au carré
-	pop{r5,r4}
+	pop{r4,r5,r6,r7}
 	bx lr
 	endp
 
