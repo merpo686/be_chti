@@ -4,17 +4,17 @@
 #include "bruitverre.h"
 #include "Affichage_Valise.h"
 
-int tab_dft[4];
+int tab_dft[6];
 short int signal[64];
 
 //variables fin
-
+//codé pour six joueurs mais en realite on a que 4 afficheurs de score donc il ne faut utiliser que les quatres premieres frequences du pistolet ( ou changer dans le code le tableau de freq des joueurs) 
 int tab_touches[6]={0};
 int tab_score[6]={0};
 short int tab_freq_joueur[6]={17,18,19,20,23,24};
 
 int check_joueur(int joueur){
-		if(tab_dft[joueur]>1000000){
+		if(tab_dft[joueur]>100000){
 			return 1;
 		}
 		else
@@ -38,6 +38,8 @@ void callback_systick(){
 			{
 				tab_score[i]+=1;
 				StartSon();
+				Prepare_Afficheur(i+1,tab_score[i]);
+				Mise_A_Jour_Afficheurs_LED();
 				tab_touches[i]=0;
 			}
 		}
@@ -46,6 +48,7 @@ void callback_systick(){
 			tab_touches[i]=0;
 		}
 	}
+	
 }
 int main(void)
 {
@@ -64,9 +67,8 @@ GPIO_Configure(GPIOB, 0, OUTPUT, ALT_PPULL);
 // Après exécution : le coeur CPU est clocké à 72MHz ainsi que tous les timers
 
 Systick_Period_ff(360000);
-Systick_Prio_IT('0',callback_systick);
-SysTick_On;
-SysTick_Enable_IT;
+Systick_Prio_IT(12,callback_systick);
+
 
 Init_TimingADC_ActiveADC_ff(ADC1,72);
 Single_Channel_ADC(ADC1,2);
@@ -74,7 +76,13 @@ Init_Conversion_On_Trig_Timer_ff(ADC1,TIM2_CC2,225);
 Init_ADC1_DMA1(0,signal);
 
 Init_Affichage();
+for (int j=0;j<4;j++)
+{
+	Prepare_Afficheur(j,0);
+}
 
+SysTick_On;
+SysTick_Enable_IT;
 //============================================================================	
 
 while(1){}
