@@ -12,7 +12,7 @@ short int signal[64];
 int tab_touches[6]={0};
 int tab_score[6]={0};
 short int tab_freq_joueur[6]={17,18,19,20,23,24};
-
+int LEDACTIV;
 int check_joueur(int joueur){
 		if(tab_dft[joueur]>100000){
 			return 1;
@@ -39,6 +39,10 @@ void callback_systick(){
 				tab_score[i]+=1;
 				StartSon();
 				Prepare_Afficheur(i+1,tab_score[i]);
+				Prepare_Clear_LED(LEDACTIV-1);
+				LEDACTIV=tab_dft[0]%4+1;
+				Choix_Capteur(LEDACTIV);
+				Prepare_Set_LED(LEDACTIV-1);
 				Mise_A_Jour_Afficheurs_LED();
 				tab_touches[i]=0;
 			}
@@ -50,6 +54,8 @@ void callback_systick(){
 	}
 	
 }
+
+
 int main(void)
 {
 
@@ -79,8 +85,12 @@ Init_Affichage();
 for (int j=0;j<4;j++)
 {
 	Prepare_Afficheur(j,0);
-}
 
+}
+LEDACTIV=1;
+Choix_Capteur(LEDACTIV);
+Prepare_Set_LED(LEDACTIV-1);
+Mise_A_Jour_Afficheurs_LED();
 SysTick_On;
 SysTick_Enable_IT;
 //============================================================================	

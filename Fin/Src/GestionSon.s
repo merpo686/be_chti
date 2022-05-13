@@ -10,7 +10,7 @@
 ;Section RAM (read write):
 	area    maram,data,readwrite
 SortieSon dcw 0  
-index dcd 0 
+index dcd 0
 
 	
 ; ===============================================================================================
@@ -31,7 +31,7 @@ StopSon proc
 	ldr r3,=index
 	;r3= i
 
-	mov r1,#5512
+	mov r1,#11024
 	str r1, [r3]
 	bx lr
 	endp
